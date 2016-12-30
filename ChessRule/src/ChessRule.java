@@ -10,16 +10,15 @@ public class ChessRule {
 
         try {
 
-            board.moveChess('P',0,1,0,5);
+            board.moveChess('p',0,6,0,3);
 
             Board.printBoard(board);
-            ArrayList<Location> list = validMove(board,'R',new Location(0,0));
+            ArrayList<Location> list = validMove(board,'N',new Location(1,0));
             printLocationList(list);
 
-            board.moveChess('R',new Location(0,0),list.get(2));
-
+            board.moveChess('N',new Location(1,0),list.get(0));
             Board.printBoard(board);
-            list = validMove(board,'R',list.get(2));
+            list = validMove(board,'N',list.get(0));
             printLocationList(list);
 
         } catch (Exception e) {
@@ -100,24 +99,84 @@ public class ChessRule {
 
     }
 
-    private static ArrayList<Location> kingMove(boolean isUpperCase, Board currentBoard, Location location){
+    private static ArrayList<Location> kingMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
 
         return null;
     }
 
-    private static ArrayList<Location> queenMove(boolean isUpperCase, Board currentBoard, Location location){
+    private static ArrayList<Location> queenMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
 
         return null;
     }
 
-    private static ArrayList<Location> bishopMove(boolean isUpperCase, Board currentBoard, Location location){
+    private static ArrayList<Location> bishopMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
 
         return null;
     }
 
-    private static ArrayList<Location> knightMove(boolean isUpperCase, Board currentBoard, Location location){
+    /**
+     * Knight(x,y) can move to (x+1,y+2) (x+1,y-2) (x-1,y+2) (x-1,y-2) (x+2,y+1) (x+2,y-1) (x-2,y+1) (x-2,y-1)
+     * @param isUpperCase upper case means black, lower case means white
+     * @param currentBoard current state of the board
+     * @param location location of the Knight
+     * @return the list of valid moves
+     * @throws CustomException.WrongChessException when there is no Knight in this location
+     */
+    private static ArrayList<Location> knightMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
+        ArrayList<Location> validMove = new ArrayList<>();
+        Location tmp = new Location(0,0);
 
-        return null;
+        //check validation
+        if(isUpperCase){  //black
+            if(currentBoard.getBoard()[location.x][location.y] != 'N'){
+                System.err.println("No Black Knight in " + location.x + ", " + location.y);
+                throw new CustomException.WrongChessException();
+            }
+        }else{  //white
+            if(currentBoard.getBoard()[location.x][location.y] != 'n'){
+                System.err.println("No White Knight in " + location.x + ", " + location.y);
+                throw new CustomException.WrongChessException();
+            }
+        }
+
+        //check each location
+        //(x+1, y+2)
+        addValidLocationToKnightValidMove(validMove,currentBoard.getBoard(),isUpperCase,new Location(location.x+1,location.y+2));
+        //(x+1, y-2)
+        addValidLocationToKnightValidMove(validMove,currentBoard.getBoard(),isUpperCase,new Location(location.x+1,location.y-2));
+        //(x-1, y+2)
+        addValidLocationToKnightValidMove(validMove,currentBoard.getBoard(),isUpperCase,new Location(location.x-1,location.y+2));
+        //(x-1, y-2)
+        addValidLocationToKnightValidMove(validMove,currentBoard.getBoard(),isUpperCase,new Location(location.x-1,location.y-2));
+        //(x+2, y+1)
+        addValidLocationToKnightValidMove(validMove,currentBoard.getBoard(),isUpperCase,new Location(location.x+2,location.y+1));
+        //(x+2, y-1)
+        addValidLocationToKnightValidMove(validMove,currentBoard.getBoard(),isUpperCase,new Location(location.x+2,location.y-1));
+        //(x-2, y+1)
+        addValidLocationToKnightValidMove(validMove,currentBoard.getBoard(),isUpperCase,new Location(location.x-2,location.y+1));
+        //(x-2, y-1)
+        addValidLocationToKnightValidMove(validMove,currentBoard.getBoard(),isUpperCase,new Location(location.x-2,location.y-1));
+
+        return validMove;
+    }
+    /**
+     * To support knightMove method
+     * Check if a location is valid for Knight to Move
+     * @param validMove Pointer to the validMove list
+     * @param currentTable current state of the board
+     * @param isUpperCase used to check if it is opponent's chess
+     * @param l Location which is going to be added
+     */
+    private static void addValidLocationToKnightValidMove(ArrayList<Location> validMove, char[][] currentTable, boolean isUpperCase, Location l){
+        if(!Board.isOutOfBoard(l)){  //it is inside
+            if(!Board.hasChess(currentTable,l)){  //no chess
+                validMove.add(l);
+            }else{  //has chess
+                if(Character.isUpperCase(currentTable[l.x][l.y]) != isUpperCase){    //if it is opponent's chess
+                    validMove.add(l);
+                }
+            }
+        }
     }
 
     /**
@@ -132,6 +191,19 @@ public class ChessRule {
     private static ArrayList<Location> rookMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException {
         ArrayList<Location> validMove = new ArrayList<>();
         Location tmp = new Location(0,0);
+
+        //check validation
+        if(isUpperCase) {  //black
+            if(currentBoard.getBoard()[location.x][location.y] != 'R'){
+                System.err.println("No Black Rook in " + location.x + ", " + location.y);
+                throw new CustomException.WrongChessException();
+            }
+        }else{  //white
+            if(currentBoard.getBoard()[location.x][location.y] != 'r'){
+                System.err.println("No White Rook in " + location.x + ", " + location.y);
+                throw new CustomException.WrongChessException();
+            }
+        }
 
         //x-axis move
         for(int i=1;i<=8;i++){
