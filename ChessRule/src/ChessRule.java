@@ -10,15 +10,15 @@ public class ChessRule {
 
         try {
 
-            board.moveChess('p',0,6,0,3);
+            board.moveChess('P',3,1,3,2);
 
             Board.printBoard(board);
-            ArrayList<Location> list = validMove(board,'N',new Location(1,0));
+            ArrayList<Location> list = validMove(board,'B',new Location(2,0));
             printLocationList(list);
 
-            board.moveChess('N',new Location(1,0),list.get(0));
+            board.moveChess('B', 2,0,5,3);
             Board.printBoard(board);
-            list = validMove(board,'N',list.get(0));
+            list = validMove(board,'B',new Location(5,3));
             printLocationList(list);
 
         } catch (Exception e) {
@@ -109,9 +109,80 @@ public class ChessRule {
         return null;
     }
 
+    /**
+     * Bishop can move along the diagonal line unless a chess in the route will stop its moving
+     * @param isUpperCase upper case means black, lower case means white
+     * @param currentBoard current state of the board
+     * @param location location of the Bishop
+     * @return the list of valid moves
+     * @throws CustomException.WrongChessException when there is no Bishop in this location
+     */
     private static ArrayList<Location> bishopMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
+        ArrayList<Location> validMove = new ArrayList<>();
+        Location tmp = new Location(0,0);
 
-        return null;
+        //check validation
+        if(isUpperCase){  //black
+            if(currentBoard.getBoard()[location.x][location.y] != 'B'){
+                System.err.println("No Black Bishop in " + location.x + ", " + location.y);
+                throw new CustomException.WrongChessException();
+            }
+        }else{  //white
+            if(currentBoard.getBoard()[location.x][location.y] != 'b'){
+                System.err.println("No White Bishop in " + location.x + ", " + location.y);
+                throw new CustomException.WrongChessException();
+            }
+        }
+
+        //(+, +)
+        for(int i=1;i<8;i++){
+            tmp = new Location(location.x+i, location.y+i);
+            if(Board.hasChess(currentBoard.getBoard(),tmp) || Board.isOutOfBoard(tmp)) break;  //if reach a chess or outside of the board, then break
+            validMove.add(tmp);  //else add to valid move
+        }
+        if(!Board.isOutOfBoard(tmp)) {  //if tmp is not outside
+            if (Character.isUpperCase(currentBoard.getBoard()[tmp.x][tmp.y]) != isUpperCase) {  //if it is opponent's chess
+                validMove.add(tmp);
+            }
+        }
+
+        //(-, -)
+        for(int i=1;i<8;i++){
+            tmp = new Location(location.x-i, location.y-i);
+            if(Board.hasChess(currentBoard.getBoard(),tmp) || Board.isOutOfBoard(tmp)) break;  //if reach a chess or outside of the board, then break
+            validMove.add(tmp);  //else add to valid move
+        }
+        if(!Board.isOutOfBoard(tmp)) {  //if tmp is not outside
+            if (Character.isUpperCase(currentBoard.getBoard()[tmp.x][tmp.y]) != isUpperCase) {  //if it is opponent's chess
+                validMove.add(tmp);
+            }
+        }
+
+        //(+, -)
+        for(int i=1;i<8;i++){
+            tmp = new Location(location.x+i, location.y-i);
+            if(Board.hasChess(currentBoard.getBoard(),tmp) || Board.isOutOfBoard(tmp)) break;  //if reach a chess or outside of the board, then break
+            validMove.add(tmp);  //else add to valid move
+        }
+        if(!Board.isOutOfBoard(tmp)) {  //if tmp is not outside
+            if (Character.isUpperCase(currentBoard.getBoard()[tmp.x][tmp.y]) != isUpperCase) {  //if it is opponent's chess
+                validMove.add(tmp);
+            }
+        }
+
+        //(-, +)
+        for(int i=1;i<8;i++){
+            tmp = new Location(location.x-i, location.y+i);
+            if(Board.hasChess(currentBoard.getBoard(),tmp) || Board.isOutOfBoard(tmp)) break;  //if reach a chess or outside of the board, then break
+            validMove.add(tmp);  //else add to valid move
+        }
+        if(!Board.isOutOfBoard(tmp)) {  //if tmp is not outside
+            if (Character.isUpperCase(currentBoard.getBoard()[tmp.x][tmp.y]) != isUpperCase) {  //if it is opponent's chess
+                validMove.add(tmp);
+            }
+        }
+
+        return validMove;
     }
 
     /**
