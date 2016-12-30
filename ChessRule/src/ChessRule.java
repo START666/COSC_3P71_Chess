@@ -100,13 +100,17 @@ public class ChessRule {
     }
 
     private static ArrayList<Location> kingMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
+        ArrayList<Location> validMove = new ArrayList<>();
+        //TODO King's Rule
 
-        return null;
+        return validMove;
     }
 
     private static ArrayList<Location> queenMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
+        ArrayList<Location> validMove = new ArrayList<>();
+        //TODO Queen's Rule
 
-        return null;
+        return validMove;
     }
 
     /**
