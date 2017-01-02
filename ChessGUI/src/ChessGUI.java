@@ -22,7 +22,8 @@ public class ChessGUI extends GLJPanel implements GLEventListener {
         addGLEventListener(this);
         animator = new FPSAnimator(this, 60, false);
         animator.start();
-        width = height = 800;
+        width =1600;
+        height = 800;
     }
 
     @Override
@@ -33,11 +34,12 @@ public class ChessGUI extends GLJPanel implements GLEventListener {
 
         gl.glTranslatef(0,0,-1);
         gl.glScalef(0.01f, 0.01f, 0.01f);
-        gl.glRotatef(r,0.0f,1.0f,0.0f);
+        gl.glRotatef(15f,1.0f,0.0f,0.0f);
+//        gl.glRotatef(r,0.0f,1.0f,0.0f);
         chairModel.opengldraw(gl);
 
         gl.glFlush();
-        r -=0.8f;
+        r -=0.2f;
     }
 
     @Override
@@ -66,7 +68,7 @@ public class ChessGUI extends GLJPanel implements GLEventListener {
 
         setLight(gl);
 
-        glu.gluPerspective(2, (double) getWidth() / getHeight(), 0.1, 10);
+        glu.gluPerspective(10, (double) getWidth() / getHeight(), 0.1, 100);
         gl.glMatrixMode(GL2.GL_MODELVIEW);
     }
 
@@ -89,7 +91,7 @@ public class ChessGUI extends GLJPanel implements GLEventListener {
     }
 
     private Boolean loadModels(GL2 gl) {
-        chairModel = ObjLoader.LoadModel("ChessGUI/models/monkey.obj","ChessGUI/models/c.mtl", gl);
+        chairModel = ObjLoader.LoadModel("ChessGUI/models/bishop.obj","ChessGUI/models/bishop.mtl", gl);
         if (chairModel == null) {
             return false;
         }
@@ -105,7 +107,7 @@ public class ChessGUI extends GLJPanel implements GLEventListener {
         gl.glLoadIdentity();
         GLU glu = new GLU();
 
-        glu.gluPerspective(2, (double) getWidth() / getHeight(), 0.1, 10);
+        glu.gluPerspective(10, (double) getWidth() / getHeight(), 0.1, 100);
         gl.glMatrixMode(GL2.GL_MODELVIEW);
 
     }

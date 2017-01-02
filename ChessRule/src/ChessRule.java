@@ -9,17 +9,33 @@ public class ChessRule {
         Board board = new Board();
 
         try {
+            board.moveChess('N',1,0,0,2);
+            board.moveChess('P',3,1,3,3);
+            board.moveChess('B',2,0,6,4);
+            board.moveChess('Q',3,0,3,2);
 
-            board.moveChess('P',3,1,3,2);
+            board.moveChess('P',6,1,6,3);
+            board.moveChess('B',5,0,7,2);
+            board.moveChess('N',6,0,5,2);
+
+            board.moveChess('R',0,0,1,0);
+            board.moveChess('R',1,0,0,0);
 
             Board.printBoard(board);
-            ArrayList<Location> list = validMove(board,'B',new Location(2,0));
+            ArrayList<Location> list = validMove(board,'K',new Location(4,0));
             printLocationList(list);
 
-            board.moveChess('B', 2,0,5,3);
-            Board.printBoard(board);
-            list = validMove(board,'B',new Location(5,3));
-            printLocationList(list);
+
+//            board.moveChess('K',4,0,2,0);  //long castling
+//            board.moveChess('K',4,0,6,0);  //short castling
+
+//            Board.printBoard(board);
+
+//
+//            board.moveChess('B', 2,0,5,3);
+//            Board.printBoard(board);
+//            list = validMove(board,'B',new Location(5,3));
+//            printLocationList(list);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,27 +87,27 @@ public class ChessRule {
         switch(chess){
             case 'k':
             case 'K':
-                return kingMove(isUpperCase,currentBoard,location);
+                return kingMove(isUpperCase,currentBoard,location,true);
 
             case 'q':
             case 'Q':
-                return queenMove(isUpperCase,currentBoard,location);
+                return queenMove(isUpperCase,currentBoard,location,true);
 
             case 'b':
             case 'B':
-                return bishopMove(isUpperCase,currentBoard,location);
+                return bishopMove(isUpperCase,currentBoard,location,true);
 
             case 'n':
             case 'N':
-                return knightMove(isUpperCase,currentBoard,location);
+                return knightMove(isUpperCase,currentBoard,location,true);
 
             case 'r':
             case 'R':
-                return rookMove(isUpperCase,currentBoard,location);
+                return rookMove(isUpperCase,currentBoard,location, true);
 
             case 'p':
             case 'P':
-                return pawnMove(isUpperCase,currentBoard,location);
+                return pawnMove(isUpperCase,currentBoard,location,true);
 
             default:
                 throw new CustomException.WrongChessException();
@@ -99,16 +115,147 @@ public class ChessRule {
 
     }
 
-    private static ArrayList<Location> kingMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
+    /**
+     * King can move to the location which is next to the current one
+     * King has a special move with Rook, Castling
+     * @param isUpperCase upper case means black, lower case means white
+     * @param currentBoard current state of the board
+     * @param location location of the King
+     * @param checkValid check if there is a King
+     * @return the list of valid moves
+     * @throws CustomException.WrongChessException when there is no King in this location
+     */
+    private static ArrayList<Location> kingMove(boolean isUpperCase, Board currentBoard, Location location, boolean checkValid) throws CustomException.WrongChessException{
         ArrayList<Location> validMove = new ArrayList<>();
-        //TODO King's Rule
+
+        //check validation
+        if(checkValid) {
+            if (isUpperCase) {  //black
+                if (!checkValidation('K', currentBoard, location)) throw new CustomException.WrongChessException();
+            } else {  //white
+                if (!checkValidation('k', currentBoard, location)) throw new CustomException.WrongChessException();
+            }
+        }
+
+        Location tmp;
+        //check each location
+        for(int dx = -1; dx <= 1; dx++){
+            for(int dy = -1; dy <= 1; dy++){
+                if(dx==0 && dy==0) continue;
+                tmp = new Location(location.x + dx,location.y + dy);
+                if(!Board.isOutOfBoard(tmp)){  //not outside
+                    if(!Board.hasChess(currentBoard.getBoard(),tmp)){  //no chess
+                        validMove.add(tmp);
+                    }else{  //has chess
+                        if(Character.isUpperCase(currentBoard.getBoard()[tmp.x][tmp.y]) != isUpperCase) {  //opponent's chess
+                            validMove.add(tmp);
+                        }
+                    }
+                }
+            }
+        }
+
+        //castling
+        if(isUpperCase){  //black
+            if(!currentBoard.hasBlackKingMoved()) {  //black king never moved
+                //left rook never moved
+                if(!currentBoard.hasBlackLeftRookMoved()){
+                    boolean hasChess = false;
+                    //check nothing b/t them
+                    for(int i=1;i<4;i++){
+                        if(Board.hasChess(currentBoard.getBoard(),i,0)){
+                            hasChess = true;
+                            break;
+                        }
+                    }
+                    if(!hasChess){  //no chess b/t them
+                       validMove.add(new Location(2,0)); //long castling
+                    }
+                }
+                //right rook never moved
+                if(!currentBoard.hasBlackRightRookMoved()){
+                    if(!currentBoard.hasBlackRightRookMoved()){  //right rook never moved
+                        boolean hasChess = false;
+                        //check nothing b/t them
+                        for(int i=5;i<7;i++){
+                            if(Board.hasChess(currentBoard.getBoard(),i,0)){
+                                hasChess = true;
+                                break;
+                            }
+                        }
+                        if(!hasChess){  //no chess b/t them
+                            validMove.add(new Location(6,0));  //short castling
+                        }
+                    }
+                }
+            }
+        }else{  //white
+            if(!currentBoard.hasWhiteKingMoved()){  //white king never moved
+                //left rook never moved
+                if(!currentBoard.hasWhiteLeftRookMoved()){
+                    boolean hasChess = false;
+                    //check nothing b/t them
+                    for(int i=1;i<4;i++){
+                        if(Board.hasChess(currentBoard.getBoard(),i,7)){
+                            hasChess = true;
+                            break;
+                        }
+                    }
+                    if(!hasChess){  //no chess b/t them
+                        validMove.add(new Location(2,7));  //long castling
+                    }
+                }
+                //right rook never moved
+                if(!currentBoard.hasWhiteRightRookMoved()){
+                    boolean hasChess = false;
+                    //check nothing b/t them
+                    for(int i=5;i<7;i++){
+                        if(Board.hasChess(currentBoard.getBoard(),i,7)){
+                            hasChess = true;
+                            break;
+                        }
+                    }
+                    if(!hasChess){//no chess b/t them
+                        validMove.add(new Location(6,7));  //short castling
+                    }
+                }
+            }
+        }
 
         return validMove;
     }
 
-    private static ArrayList<Location> queenMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
+    /**
+     * Queen can move likes a combination of Bishop and Rook
+     * @param isUpperCase upper case means black, lower case means white
+     * @param currentBoard current state of the board
+     * @param location location of the Queen
+     * @param checkValid check if there is a Queen
+     * @return the list of valid moves
+     * @throws CustomException.WrongChessException when there is no Queen in this location
+     */
+    private static ArrayList<Location> queenMove(boolean isUpperCase, Board currentBoard, Location location, boolean checkValid) throws CustomException.WrongChessException{
         ArrayList<Location> validMove = new ArrayList<>();
-        //TODO Queen's Rule
+
+        //check validation
+        if(checkValid) {
+            if (isUpperCase) {  //black
+                if (!checkValidation('Q', currentBoard, location)) throw new CustomException.WrongChessException();
+            } else {  //white
+                if (!checkValidation('q', currentBoard, location)) throw new CustomException.WrongChessException();
+            }
+        }
+
+        //move like a rook
+        ArrayList<Location> validRook = rookMove(isUpperCase,currentBoard,location,false);
+        //move like a bishop
+        ArrayList<Location> validBishop = bishopMove(isUpperCase,currentBoard,location, false);
+
+        //add them up
+        for(Location l : validRook)
+            validMove.add(l);
+        for(Location l : validBishop)
+            validMove.add(l);
 
         return validMove;
     }
@@ -118,23 +265,20 @@ public class ChessRule {
      * @param isUpperCase upper case means black, lower case means white
      * @param currentBoard current state of the board
      * @param location location of the Bishop
+     * @param checkValid check if there is a Bishop
      * @return the list of valid moves
      * @throws CustomException.WrongChessException when there is no Bishop in this location
      */
-    private static ArrayList<Location> bishopMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
+    private static ArrayList<Location> bishopMove(boolean isUpperCase, Board currentBoard, Location location, boolean checkValid) throws CustomException.WrongChessException{
         ArrayList<Location> validMove = new ArrayList<>();
         Location tmp = new Location(0,0);
 
         //check validation
-        if(isUpperCase){  //black
-            if(currentBoard.getBoard()[location.x][location.y] != 'B'){
-                System.err.println("No Black Bishop in " + location.x + ", " + location.y);
-                throw new CustomException.WrongChessException();
-            }
-        }else{  //white
-            if(currentBoard.getBoard()[location.x][location.y] != 'b'){
-                System.err.println("No White Bishop in " + location.x + ", " + location.y);
-                throw new CustomException.WrongChessException();
+        if(checkValid) {
+            if (isUpperCase) {  //black
+                if (!checkValidation('B', currentBoard, location)) throw new CustomException.WrongChessException();
+            } else {  //white
+                if (!checkValidation('b', currentBoard, location)) throw new CustomException.WrongChessException();
             }
         }
 
@@ -194,23 +338,20 @@ public class ChessRule {
      * @param isUpperCase upper case means black, lower case means white
      * @param currentBoard current state of the board
      * @param location location of the Knight
+     * @param checkValid check if there is a Knight
      * @return the list of valid moves
      * @throws CustomException.WrongChessException when there is no Knight in this location
      */
-    private static ArrayList<Location> knightMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException{
+    private static ArrayList<Location> knightMove(boolean isUpperCase, Board currentBoard, Location location, boolean checkValid) throws CustomException.WrongChessException{
         ArrayList<Location> validMove = new ArrayList<>();
         Location tmp = new Location(0,0);
 
         //check validation
-        if(isUpperCase){  //black
-            if(currentBoard.getBoard()[location.x][location.y] != 'N'){
-                System.err.println("No Black Knight in " + location.x + ", " + location.y);
-                throw new CustomException.WrongChessException();
-            }
-        }else{  //white
-            if(currentBoard.getBoard()[location.x][location.y] != 'n'){
-                System.err.println("No White Knight in " + location.x + ", " + location.y);
-                throw new CustomException.WrongChessException();
+        if(checkValid) {
+            if (isUpperCase) {  //black
+                if (!checkValidation('N', currentBoard, location)) throw new CustomException.WrongChessException();
+            } else {  //white
+                if (!checkValidation('n', currentBoard, location)) throw new CustomException.WrongChessException();
             }
         }
 
@@ -260,23 +401,20 @@ public class ChessRule {
      * @param isUpperCase upper case means black, lower case means white
      * @param currentBoard current state of the board
      * @param location location of the Rook
+     * @param checkValid check if there is a Rook
      * @return the list of valid moves
      * @throws CustomException.WrongChessException when there is no Rook in this location
      */
-    private static ArrayList<Location> rookMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException {
+    private static ArrayList<Location> rookMove(boolean isUpperCase, Board currentBoard, Location location, boolean checkValid) throws CustomException.WrongChessException {
         ArrayList<Location> validMove = new ArrayList<>();
         Location tmp = new Location(0,0);
 
         //check validation
-        if(isUpperCase) {  //black
-            if(currentBoard.getBoard()[location.x][location.y] != 'R'){
-                System.err.println("No Black Rook in " + location.x + ", " + location.y);
-                throw new CustomException.WrongChessException();
-            }
-        }else{  //white
-            if(currentBoard.getBoard()[location.x][location.y] != 'r'){
-                System.err.println("No White Rook in " + location.x + ", " + location.y);
-                throw new CustomException.WrongChessException();
+        if(checkValid) {
+            if (isUpperCase) {  //black
+                if(!checkValidation('R', currentBoard, location)) throw new CustomException.WrongChessException();
+            } else {  //white
+                if(!checkValidation('r', currentBoard, location)) throw new CustomException.WrongChessException();
             }
         }
 
@@ -325,10 +463,11 @@ public class ChessRule {
      * @param isUpperCase upper case means black, lower case means white
      * @param currentBoard current state of the board
      * @param location location of the Pawn
+     * @param checkValid check if there is a Pawn
      * @return the list of valid moves
      * @throws CustomException.WrongChessException when there is no pawn in this location
      */
-    private static ArrayList<Location> pawnMove(boolean isUpperCase, Board currentBoard, Location location) throws CustomException.WrongChessException {
+    private static ArrayList<Location> pawnMove(boolean isUpperCase, Board currentBoard, Location location, boolean checkValid) throws CustomException.WrongChessException {
         ArrayList<Location> validMove = new ArrayList<>();
         boolean isNeverMove;
         int nextDeltaY;
@@ -341,20 +480,16 @@ public class ChessRule {
             nextDeltaY = 1;  //move down
 
             //check validation
-            if(currentTable[location.x][location.y] != 'P'){
-                System.err.println("No Black Pawn in " + location.x + ", " + location.y);
-                throw new CustomException.WrongChessException();
-            }
+            if(checkValid)
+                if (!checkValidation('P', currentBoard, location)) throw new CustomException.WrongChessException();
         }else{  //white
             //check if it has moved
             isNeverMove = (location.y == 6);
             nextDeltaY = -1;  //move up
 
             //check validation
-            if(currentTable[location.x][location.y] != 'p'){
-                System.err.println("No White Pawn in " + location.x + ", " + location.y);
-                throw new CustomException.WrongChessException();
-            }
+            if(checkValid)
+                if (!checkValidation('p', currentBoard, location)) throw new CustomException.WrongChessException();
         }
 
         //normal move, 1 distance move
@@ -386,6 +521,13 @@ public class ChessRule {
         return validMove;
     }
 
+    private static boolean checkValidation(char chess, Board currentBoard, Location location){
+        if(currentBoard.getBoard()[location.x][location.y] != chess){
+            System.err.println("No "+ chess +" in " + location.x + ", " + location.y);
+            return false;
+        }
+        return true;
+    }
 
 
 }

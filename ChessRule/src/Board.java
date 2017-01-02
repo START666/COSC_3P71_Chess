@@ -50,7 +50,7 @@ public class Board {
     }
 
     /**
-     * move chess from a location to a location, no rule check
+     * move chess from a location to a location, only check castling, no other rules checked
      * @param chess which is going to be moved
      * @param from location of the current
      * @param to location where it is going to be
@@ -66,6 +66,24 @@ public class Board {
         if(isOutOfBoard(fromX,fromY) || isOutOfBoard(toX,toY)) throw new CustomException.WrongLocationException();
         //check validation
         if(board[fromX][fromY] != chess) throw new CustomException.WrongChessException();
+
+        //check if this move is castling
+        if(chess == 'K' && !hasBlackKingMoved()){  //black King
+            if(toX == 2 && toY == 0){  //long castling
+                if(!hasBlackLeftRookMoved()) moveChess('R',0,0,3,0);
+            }
+            if(toX == 6 && toY == 0){  //short castling
+                if(!hasBlackRightRookMoved()) moveChess('R',7,0,5,0);
+            }
+        }
+        if(chess == 'k'){  //white King
+            if(toX == 2 && toY == 7){  //long castling
+                if(!hasWhiteLeftRookMoved()) moveChess('r',0,7,3,7);
+            }
+            if(toX == 6 && toY == 7){  //short castling
+                if(!hasWhiteRightRookMoved()) moveChess('r',7,7,5,7);
+            }
+        }
 
         if(hasChess(board,toX,toY)){  //has chess there
             if( Character.isUpperCase(board[toX][toY]) == Character.isUpperCase(chess) ) throw new CustomException.CannotTakeOwnChessException();  //has own chess
