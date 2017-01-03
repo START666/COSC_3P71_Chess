@@ -91,7 +91,7 @@ public class ChessGUI extends GLJPanel implements GLEventListener {
     }
 
     private Boolean loadModels(GL2 gl) {
-        chairModel = ObjLoader.LoadModel("ChessGUI/models/bishop.obj","ChessGUI/models/bishop.mtl", gl);
+        chairModel = ObjLoader.LoadModel("ChessGUI/models/Chessboard.obj","ChessGUI/models/Chessboard.mtl", gl);
         if (chairModel == null) {
             return false;
         }

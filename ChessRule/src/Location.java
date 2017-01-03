@@ -13,4 +13,8 @@ public class Location {
         this.x = x;
         this.y = y;
     }
+
+    public boolean equals(Location location){
+        return (location.x == this.x) && (location.y == this.y) ;
+    }
 }

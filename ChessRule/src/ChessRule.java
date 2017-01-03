@@ -9,27 +9,28 @@ public class ChessRule {
         Board board = new Board();
 
         try {
-            board.moveChess('N',1,0,0,2);
-            board.moveChess('P',3,1,3,3);
-            board.moveChess('B',2,0,6,4);
-            board.moveChess('Q',3,0,3,2);
+//            board.moveChess('N',1,0,0,2);
+//            board.moveChess('P',3,1,3,3);
+//            board.moveChess('B',2,0,6,4);
+//            board.moveChess('Q',3,0,3,2);
+//
+//            board.moveChess('P',6,1,6,3);
+//            board.moveChess('B',5,0,7,2);
+//            board.moveChess('N',6,0,5,2);
 
-            board.moveChess('P',6,1,6,3);
-            board.moveChess('B',5,0,7,2);
-            board.moveChess('N',6,0,5,2);
-
-            board.moveChess('R',0,0,1,0);
-            board.moveChess('R',1,0,0,0);
+//            board.moveChess('R',0,0,1,0);
+//            board.moveChess('R',1,0,0,0);
 
             Board.printBoard(board);
-            ArrayList<Location> list = validMove(board,'K',new Location(4,0));
+            ArrayList<Location> list = validMove(board,'P',new Location(4,1));
             printLocationList(list);
 
+            board.moveChess('P',new Location(4,1),list.get(1));
 
 //            board.moveChess('K',4,0,2,0);  //long castling
 //            board.moveChess('K',4,0,6,0);  //short castling
 
-//            Board.printBoard(board);
+            Board.printBoard(board);
 
 //
 //            board.moveChess('B', 2,0,5,3);

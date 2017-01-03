@@ -11,12 +11,32 @@ public class Board {
                                  // 3 - White King
                                  // 4 - White Left Rook
                                  // 5 - White Right Rook
-
+    /**
+     * index:
+     *      0 - Rook
+     *      1 - Knight
+     *      2 - Bishop
+     *      3 - Queen
+     *      4 - King
+     *      5 - Bishop
+     *      6 - Knight
+     *      7 - Rook
+     *      8 to 15 - Pawn
+     * If a chess has been taken, then mark as -1
+     */
+    private int[] blackX;
+    private int[] blackY;
+    private int[] whiteX;
+    private int[] whiteY;
     private ArrayList<Character> takenChess;
 
     public Board(){
         board = new char[8][8];
         takenChess = new ArrayList<>();
+        blackX = new int[16];
+        blackY = new int[16];
+        whiteX = new int[16];
+        whiteY = new int[16];
         initBoard();
     }
 
@@ -92,6 +112,159 @@ public class Board {
         board[fromX][fromY] = '-';
         board[toX][toY] = chess;
 
+        //update chess location list
+        switch(chess){
+            case 'R':
+                if(new Location(fromX,fromY).equals(new Location(blackX[0], blackY[0]))){
+                    blackX[0] = toX;
+                    blackY[0] = toY;
+                }else if(new Location(fromX,fromY).equals(new Location(blackX[7], blackY[7]))){
+                    blackX[7] = toX;
+                    blackY[7] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'N':
+                if(new Location(fromX,fromY).equals(new Location(blackX[1],blackY[1]))){
+                    blackX[1] = toX;
+                    blackY[1] = toY;
+                }else if(new Location(fromX,fromY).equals(new Location(blackX[6],blackY[6]))){
+                    blackX[6] = toX;
+                    blackY[6] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'B':
+                if(new Location(fromX,fromY).equals(new Location(blackX[2],blackY[2]))){
+                    blackX[2] = toX;
+                    blackY[2] = toY;
+                }else if(new Location(fromX,fromY).equals(new Location(blackX[5],blackY[5]))){
+                    blackX[5] = toX;
+                    blackY[5] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'Q':
+                if(new Location(fromX,fromY).equals(new Location(blackX[3],blackY[3]))){
+                    blackX[3] = toX;
+                    blackY[3] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'K':
+                if(new Location(fromX,fromY).equals(new Location(blackX[4],blackY[4]))){
+                    blackX[4] = toX;
+                    blackY[4] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'P':
+                boolean found = false;
+                for(int i=8;i<16;i++){
+                    if(new Location(fromX,fromY).equals(new Location(blackX[i],blackY[i]))){
+                        found = true;
+                        blackX[i] = toX;
+                        blackY[i] = toY;
+                        break;
+                    }
+                }
+                if(!found){
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'r':
+                if(new Location(fromX,fromY).equals(new Location(whiteX[0], whiteY[0]))){
+                    whiteX[0] = toX;
+                    whiteY[0] = toY;
+                }else if(new Location(fromX,fromY).equals(new Location(whiteX[7], whiteY[7]))){
+                    whiteX[7] = toX;
+                    whiteY[7] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'n':
+                if(new Location(fromX,fromY).equals(new Location(whiteX[1],whiteY[1]))){
+                    whiteX[1] = toX;
+                    whiteY[1] = toY;
+                }else if(new Location(fromX,fromY).equals(new Location(whiteX[6],whiteY[6]))){
+                    whiteX[6] = toX;
+                    whiteY[6] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'b':
+                if(new Location(fromX,fromY).equals(new Location(whiteX[2],whiteY[2]))){
+                    whiteX[2] = toX;
+                    whiteY[2] = toY;
+                }else if(new Location(fromX,fromY).equals(new Location(whiteX[5],whiteY[5]))){
+                    whiteX[5] = toX;
+                    whiteY[5] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'q':
+                if(new Location(fromX,fromY).equals(new Location(whiteX[3],whiteY[3]))){
+                    whiteX[3] = toX;
+                    whiteY[3] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'k':
+                if(new Location(fromX,fromY).equals(new Location(whiteX[4],whiteY[4]))){
+                    whiteX[4] = toX;
+                    whiteY[4] = toY;
+                }else{
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+
+            case 'p':
+                found = false;
+                for(int i=8;i<16;i++){
+                    if(new Location(fromX,fromY).equals(new Location(whiteX[i],whiteY[i]))){
+                        found = true;
+                        whiteX[i] = toX;
+                        whiteY[i] = toY;
+                        break;
+                    }
+                }
+                if(!found){
+                    System.err.println("No " + chess + " Found in this location.");
+                    throw new CustomException.WrongChessException();
+                }
+                break;
+        }
+
         //mark some chess as moved if possible
         switch(chess){
             case 'K':
@@ -146,6 +319,12 @@ public class Board {
         board[7][0] = 'R';
         for(int i=0;i<8;i++)
             board[i][1] = 'P';
+        for(int i=0;i<8;i++){
+            blackX[i] = i;
+            blackY[i] = 0;
+            blackX[i+8] = i;  //pawn
+            blackY[i+8] = 1;
+        }
 
         //white
         board[0][7] = 'r';
@@ -158,8 +337,28 @@ public class Board {
         board[7][7] = 'r';
         for(int i=0;i<8;i++)
             board[i][6] = 'p';
-
+        for(int i=0;i<8;i++){
+            whiteX[i] = i;
+            whiteY[i] = 7;
+            whiteX[i+8] = i;  //pawn
+            whiteY[i+8] = 6;
+        }
     }
+
+    /**
+     * Get the location lists
+     * @return corresponding location list
+     */
+    public int[] getBlackX(){return blackX;}
+    public int[] getBlackY(){return blackY;}
+    public int[] getWhiteX(){return whiteX;}
+    public int[] getWhiteY(){return whiteY;}
+
+    /**
+     * Get taken chess list
+     * @return taken chess list
+     */
+    public ArrayList<Character> getTakenChess(){return takenChess;}
 
     /**
      * Print the board into Console
